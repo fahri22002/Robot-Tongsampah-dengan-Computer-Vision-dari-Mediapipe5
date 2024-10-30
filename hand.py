@@ -1,6 +1,10 @@
 import cv2
 import mediapipe as mp
 import math
+import serial
+import time
+ser = serial.Serial('COM8', 9600)  # Ganti 'COM8' dengan port yang sesuai
+time.sleep(2)  # Tunggu beberapa detik untuk memastikan koneksi serial stabil
 
 # Inisialisasi MediaPipe Hands
 mp_drawing = mp.solutions.drawing_utils
@@ -30,7 +34,7 @@ def detect_hand_raised():
             # Kembalikan gambar ke BGR untuk ditampilkan di OpenCV
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-
+            direction_code = ""
             # Jika hasil deteksi ditemukan
             if results.pose_landmarks:
                 mp_drawing.draw_landmarks(
@@ -52,7 +56,6 @@ def detect_hand_raised():
                     cv2.putText(image, f'Left Hand Raised, Dist: {distance_left:.4f}', (50, 50), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
                     # Kode biner untuk tangan kiri
-                    direction_code = ""
                     if left_wrist.x < 0.3:
                         direction_code += "L"  # Kiri
                     elif left_wrist.x > 0.7:
@@ -74,7 +77,7 @@ def detect_hand_raised():
                     cv2.putText(image, f'Right Hand Raised, Dist: {distance_right:.4f}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
 
                     # Kode biner untuk tangan kanan
-                    direction_code = ""
+                    
                     # Cek nilai x untuk kiri/kanan
                     if right_wrist.x < 0.3:
                         direction_code += "L"  # Kiri
@@ -93,6 +96,7 @@ def detect_hand_raised():
                     print(f"Kode biner tangan kanan: {direction_code}")
                 else :
                     direction_code += "R"
+            ser.write(direction_code.encode('utf-8'))
             # Tampilkan gambar
             cv2.imshow('Hand Raised Detection', image)
 
@@ -101,6 +105,6 @@ def detect_hand_raised():
 
     cap.release()
     cv2.destroyAllWindows()
-
+    ser.close()
 if __name__ == "__main__":
     detect_hand_raised()
