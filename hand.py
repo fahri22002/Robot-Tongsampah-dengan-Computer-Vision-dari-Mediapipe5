@@ -68,7 +68,7 @@ def detect_hand_raised():
                     print(f"Kode biner tangan kiri: {direction_code}")
 
                 # Cek apakah tangan kanan diangkat (koordinat Y tangan lebih tinggi dari bahu)
-                if right_wrist.y < right_shoulder.y:
+                elif right_wrist.y < right_shoulder.y:
                     distance_right = calculate_distance(right_wrist.x, right_wrist.y, right_shoulder.x, right_shoulder.y)
                     print(f"Tangan kanan diangkat: X={right_wrist.x}, Y={right_wrist.y}, Jarak={distance_right:.4f}")
                     cv2.putText(image, f'Right Hand Raised, Dist: {distance_right:.4f}', (50, 100), cv2.FONT_HERSHEY_SIMPLEX, 1, (0, 255, 0), 2, cv2.LINE_AA)
@@ -91,7 +91,8 @@ def detect_hand_raised():
                         
 
                     print(f"Kode biner tangan kanan: {direction_code}")
-
+                else :
+                    direction_code += "R"
             # Tampilkan gambar
             cv2.imshow('Hand Raised Detection', image)
 
