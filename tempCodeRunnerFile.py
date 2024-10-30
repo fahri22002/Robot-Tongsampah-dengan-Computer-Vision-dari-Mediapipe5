@@ -3,7 +3,7 @@ import mediapipe as mp
 import math
 import serial
 import time
-ser = serial.Serial('COM7', 9600)  # Ganti 'COM8' dengan port yang sesuai
+ser = serial.Serial('COM8', 9600)  # Ganti 'COM8' dengan port yang sesuai
 time.sleep(2)  # Tunggu beberapa detik untuk memastikan koneksi serial stabil
 
 # Inisialisasi MediaPipe Hands
@@ -34,10 +34,9 @@ def detect_hand_raised():
             # Kembalikan gambar ke BGR untuk ditampilkan di OpenCV
             image.flags.writeable = True
             image = cv2.cvtColor(image, cv2.COLOR_RGB2BGR)
-            direction_code = "R"
+            direction_code = ""
             # Jika hasil deteksi ditemukan
             if results.pose_landmarks:
-                direction_code = ""
                 mp_drawing.draw_landmarks(
                     image, results.pose_landmarks, mp_pose.POSE_CONNECTIONS)
 
@@ -65,13 +64,10 @@ def detect_hand_raised():
                         # Cek jarak untuk maju/mundur
                         if distance_left < 0.3:
                             direction_code += "F"  # Maju
-                        elif distance_left > 0.4:
+                        elif distance_left > 0.7:
                             direction_code += "B"  # Mundur
                         else:
                             direction_code += "S"
-                            ser.write(direction_code.encode('utf-8'))
-                            time.sleep(6)
-                            direction_code = 'R'
                     print(f"Kode biner tangan kiri: {direction_code}")
 
                 # Cek apakah tangan kanan diangkat (koordinat Y tangan lebih tinggi dari bahu)
@@ -91,25 +87,22 @@ def detect_hand_raised():
                         # Cek jarak untuk maju/mundur
                         if distance_right < 0.3:
                             direction_code += "F"  # Maju
-                        elif distance_right > 0.4:
+                        elif distance_right > 0.7:
                             direction_code += "B"  # Mundur
                         else:
                             direction_code += "S"
-                            ser.write(direction_code.encode('utf-8'))
-                            time.sleep(6)
-                            direction_code = 'R'
+                        
 
                     print(f"Kode biner tangan kanan: {direction_code}")
                 else :
                     direction_code += "R"
             ser.write(direction_code.encode('utf-8'))
-            print(f"Kode biner aja: {direction_code}")
             # Tampilkan gambar
             cv2.imshow('Hand Raised Detection', image)
 
             if cv2.waitKey(5) & 0xFF == 27:  # Tekan 'Esc' untuk keluar
                 break
-                
+
     cap.release()
     cv2.destroyAllWindows()
     ser.close()

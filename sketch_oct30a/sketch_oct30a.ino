@@ -10,8 +10,6 @@ int EnR = 7; //kanan
 int pos = 90;
 void setup() {
   // Set sensor infrared sebagai input
-  pinMode(IF_kiri, INPUT);
-  pinMode(IF_kanan, INPUT);
   servo.attach(s);
   servo.write(pos);
   // Set motor sebagai output
@@ -21,32 +19,33 @@ void setup() {
   pinMode(EnR, OUTPUT);
 
   // Inisialisasi motor mati
+  Serial.begin(9600);
   STOP();
 }
 
 void loop() {
-    // Membaca nilai dari sensor infrared
     if (Serial.available() > 0) {
     // Membaca data dari serial
-    receivedChar = Serial.read();
-    }
+      char receivedChar = Serial.read();
+      Serial.println(receivedChar);
+      if (receivedChar == 'F') {
+        MAJU();
+      }
+      else if (receivedChar == 'L') { // kalau yang hitam cuma dikiri maka harus belok kiri agar sensor kanan mendeteksi hitam
+        KIRI();
+      }
+      else if (receivedChar == 'R') {
+        KANAN();
+      }
+      // Jika tidak ada yang terdeteksi, berhenti
+      else if (receivedChar == 'B'){
+        MUNDUR();
+      }else {
+        STOP();
+        OPEN();
+      } 
 
-  if (receivedChar == 'F') {
-    MAJU();
   }
-  else if (receivedChar == 'L') { // kalau yang hitam cuma dikiri maka harus belok kiri agar sensor kanan mendeteksi hitam
-    KIRI();
-  }
-  else if (receivedChar == 'R') {
-    KANAN();
-  }
-  // Jika tidak ada yang terdeteksi, berhenti
-  else if (receivedChar == 'B'){
-    MUNDUR();
-  }else {
-    STOP();
-    OPEN();
-  } 
 }
 
 void MAJU(){
@@ -66,15 +65,12 @@ void MUNDUR(){
 }
 
 void STOP(){
-  digitalWrite(EnL, LOW);
-  digitalWrite(EnR, LOW);
-  delay(0);
-  digitalWrite(EnL, HIGH);
-  digitalWrite(EnR, HIGH);
+  analogWrite(VelL, 0);
+  analogWrite(VelR, 0);
   Serial.println("STOP");
 }
 
-void KANAN(){
+void KIRI(){
   analogWrite(VelL, 250);
   analogWrite(VelR, 250);
   digitalWrite(EnL, HIGH);
@@ -82,7 +78,7 @@ void KANAN(){
   Serial.println("KANAN");
 }
 
-void KIRI(){
+void KANAN(){
   analogWrite(VelL, 250);
   analogWrite(VelR, 250);
   digitalWrite(EnL, LOW);
@@ -92,6 +88,6 @@ void KIRI(){
 
 void OPEN(){
   servo.write(pos-90);
-  delay(3000);
+  delay(5000);
   servo.write(pos+90);
 }
