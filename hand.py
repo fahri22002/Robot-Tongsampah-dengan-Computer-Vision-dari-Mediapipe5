@@ -17,6 +17,8 @@ def calculate_distance(x1, y1, x2, y2):
 # Fungsi utama untuk deteksi pose
 def detect_hand_raised():
     cap = cv2.VideoCapture(0)  # Menangkap video dari kamera
+    add = 'http://10.92.49.236:6969/video'
+    cap.open(add)
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
             success, frame = cap.read()
@@ -62,16 +64,7 @@ def detect_hand_raised():
                     elif left_wrist.x > 0.7:
                         direction_code += "R"  # Kanan
                     else:
-                        # Cek jarak untuk maju/mundur
-                        if distance_left < 0.3:
-                            direction_code += "F"  # Maju
-                        elif distance_left > 0.4:
-                            direction_code += "B"  # Mundur
-                        else:
-                            direction_code += "S"
-                            ser.write(direction_code.encode('utf-8'))
-                            time.sleep(6)
-                            direction_code = 'R'
+                        direction_code += "F"  # Maju
                     print(f"Kode biner tangan kiri: {direction_code}")
 
                 # Cek apakah tangan kanan diangkat (koordinat Y tangan lebih tinggi dari bahu)
@@ -88,16 +81,7 @@ def detect_hand_raised():
                     elif right_wrist.x > 0.7:
                         direction_code += "R"  # Kanan
                     else:
-                        # Cek jarak untuk maju/mundur
-                        if distance_right < 0.3:
-                            direction_code += "F"  # Maju
-                        elif distance_right > 0.4:
-                            direction_code += "B"  # Mundur
-                        else:
-                            direction_code += "S"
-                            ser.write(direction_code.encode('utf-8'))
-                            time.sleep(6)
-                            direction_code = 'R'
+                        direction_code += "F"  # Maju
 
                     print(f"Kode biner tangan kanan: {direction_code}")
                 else :
