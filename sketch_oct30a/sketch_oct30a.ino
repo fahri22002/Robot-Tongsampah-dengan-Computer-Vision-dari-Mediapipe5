@@ -1,7 +1,8 @@
 // Definisi pin sensor
 #include <Servo.h>
 
-const int s = 8;
+const int s = 9;
+const int pingPin = 8;
 Servo servo;
 int VelL = 5;
 int VelR = 6;
@@ -26,10 +27,26 @@ void setup() {
 void loop() {
     if (Serial.available() > 0) {
     // Membaca data dari serial
+    pinMode(pingPin, OUTPUT);
+    digitalWrite(pingPin, LOW);
+    delayMicroseconds(2);
+    digitalWrite(pingPin, HIGH);
+    delayMicroseconds(5);
+    digitalWrite(pingPin, LOW);
+    pinMode(pingPin, INPUT);
+    duration = pulseIn(pingPin, HIGH);
+    cm = microsecondsToCentimeters(duration);
       char receivedChar = Serial.read();
       Serial.println(receivedChar);
       if (receivedChar == 'F') {
-        MAJU();
+        if (cm > 30){
+          MAJU();
+        } else if (cm < 10){
+          MUNDUR();
+        } else {
+          STOP();
+          OPEN();
+        }
       }
       else if (receivedChar == 'L') { // kalau yang hitam cuma dikiri maka harus belok kiri agar sensor kanan mendeteksi hitam
         KIRI();
@@ -37,9 +54,6 @@ void loop() {
       else if (receivedChar == 'R') {
         KANAN();
       }
-      // Jika tidak ada yang terdeteksi, berhenti
-      else if (receivedChar == 'B'){
-        MUNDUR();
       }else {
         STOP();
         OPEN();
@@ -47,7 +61,9 @@ void loop() {
 
   }
 }
-
+long microsecondsToCentimeters(long microseconds) {
+  return microseconds / 29 / 2;
+}
 void MAJU(){
   analogWrite(VelL, 250);
   analogWrite(VelR, 250);
