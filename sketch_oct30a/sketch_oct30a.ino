@@ -34,8 +34,8 @@ void loop() {
     delayMicroseconds(5);
     digitalWrite(pingPin, LOW);
     pinMode(pingPin, INPUT);
-    duration = pulseIn(pingPin, HIGH);
-    cm = microsecondsToCentimeters(duration);
+    long duration = pulseIn(pingPin, HIGH);
+    long cm = microsecondsToCentimeters(duration);
       char receivedChar = Serial.read();
       Serial.println(receivedChar);
       if (receivedChar == 'F') {
@@ -53,7 +53,6 @@ void loop() {
       }
       else if (receivedChar == 'R') {
         KANAN();
-      }
       }else {
         STOP();
         OPEN();

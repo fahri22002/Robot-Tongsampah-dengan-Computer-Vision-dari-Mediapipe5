@@ -17,7 +17,7 @@ def calculate_distance(x1, y1, x2, y2):
 # Fungsi utama untuk deteksi pose
 def detect_hand_raised():
     cap = cv2.VideoCapture(0)  # Menangkap video dari kamera
-    add = 'http://10.92.49.236:6969/video'
+    add = 'http://10.92.50.87:4747/video'
     cap.open(add)
     with mp_pose.Pose(min_detection_confidence=0.5, min_tracking_confidence=0.5) as pose:
         while cap.isOpened():
