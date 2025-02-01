@@ -85,7 +85,7 @@ void KANAN() {
     digitalWrite(EnR, HIGH);
     Serial.println("KANAN");
 }
-void open() {
+void OPEN() {
     servo.write(pos-90);
     delay(5000);
     servo.write(pos+90);
