@@ -3,7 +3,7 @@ import mediapipe as mp
 import math
 import serial
 import time
-ser = serial.Serial('COM7', 9600)  # Ganti 'COM8' dengan port yang sesuai
+ser = serial.Serial('COM3', 9600)  # Ganti dengan port yang sesuai
 time.sleep(2)  # Tunggu beberapa detik untuk memastikan koneksi serial stabil
 
 # Inisialisasi MediaPipe Hands
@@ -63,10 +63,18 @@ def detect_hand_raised():
                         direction_code += "L"  # Kiri
                     elif left_wrist.x > 0.7:
                         direction_code += "R"  # Kanan
-                    else:
+                    elif distance_left < 0.4:
                         direction_code += "F"  # Maju
+                    elif distance_left > 0.6:
+                        direction_code += "B"  # Maju
+                    else:
+                        direction_code = "S"  # Maju
+                        ser.write(direction_code.encode('utf-8'))
+                        print(direction_code)
+                        time.sleep(6)
+                        direction_code = "R"
                     print(f"Kode biner tangan kiri: {direction_code}")
-
+# ini gue ampe bawah
                 # Cek apakah tangan kanan diangkat (koordinat Y tangan lebih tinggi dari bahu)
                 elif right_wrist.y < right_shoulder.y:
                     distance_right = calculate_distance(right_wrist.x, right_wrist.y, right_shoulder.x, right_shoulder.y)
@@ -80,9 +88,16 @@ def detect_hand_raised():
                         direction_code += "L"  # Kiri
                     elif right_wrist.x > 0.7:
                         direction_code += "R"  # Kanan
-                    else:
+                    elif distance_right < 0.4:
                         direction_code += "F"  # Maju
-
+                    elif distance_right > 0.6:
+                        direction_code += "B"  # Maju
+                    else:
+                        direction_code = "S"  # Maju
+                        ser.write(direction_code.encode('utf-8'))
+                        print(direction_code)
+                        time.sleep(6)
+                        direction_code = "R"
                     print(f"Kode biner tangan kanan: {direction_code}")
                 else :
                     direction_code += "R"
